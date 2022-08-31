@@ -10,7 +10,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
 
-class UserCreate
+class UserManager
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -22,7 +22,7 @@ class UserCreate
     {
     }
 
-    public function saveData($name, $surname, $email, $pesel, $skills)
+    public function saveUser($name, $surname, $email, $pesel, $skills)
     {
         $this->validateUserData($name, $surname, $email, $pesel, $skills);
 
@@ -68,5 +68,12 @@ class UserCreate
         $this->validator->validateName($name);
         $this->validator->validateName($surname);
         $this->validator->validateEmail($email);
+    }
+
+    public function activateUser(User $user)
+    {
+        $user->setActivated(true);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
     }
 }

@@ -18,6 +18,8 @@ There are 3 ways of creating new user:
 If everything woks ok site should be available at http://127.0.0.1:8000
 
 ### CLI
+
+#### 1. Add User
 Use this command in terminal in project directory to create user:
     
     php bin/console app:add-user
@@ -29,6 +31,21 @@ Or pass parameters with it
 Skills should be separated by comma ',' ex: 
     
     php, css, java
+
+#### 2. Activate User
+
+For interactive mode use:
+
+    php bin/console app:user-activate
+
+Or pass user identifier as argument:
+
+    php bin/console app:user-activate johnd@gg.pl
+
+For help:
+
+    php bin/console help app:user-activate
+
 
 ### Sending REST request
 

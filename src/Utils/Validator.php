@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -63,5 +64,16 @@ class Validator
          }
 
          return $pesel;
+     }
+
+     public function validateSearch(string $search): User
+     {
+         $existingUser = $this->users->findOneBySearchField($search);
+
+         if (null !== $existingUser) {
+             throw new RuntimeException(sprintf('There is already a user registered with the "%s" pesel.', $pesel));
+         }
+
+         return $existingUser;
      }
 }

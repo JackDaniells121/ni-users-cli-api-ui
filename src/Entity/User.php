@@ -100,6 +100,11 @@ class User
         return $this->activated;
     }
 
+    public function getActivatedLabel(): string
+    {
+        return $this->activated ? 'active':'not active';
+    }
+
     public function setActivated(bool $activated): self
     {
         $this->activated = $activated;

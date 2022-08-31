@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Utils\UserCreate;
+use App\Utils\UserManager;
 use App\Utils\Validator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -12,7 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-// the name of the command is what users type after "php bin/console"
 #[AsCommand(
     name: 'app:add-user',
     description: 'Creates a new user.',
@@ -25,7 +24,7 @@ class AddUserCommand extends Command
 
     public function __construct(
         private Validator $validator,
-        private UserCreate $userCreate
+        private UserManager $userCreate
     ) {
         parent::__construct();
     }
@@ -42,10 +41,6 @@ class AddUserCommand extends Command
         ;
     }
 
-    /**
-     * This optional method is the first one executed for a command after configure()
-     * and is useful to initialize properties based on the input arguments and options.
-     */
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->io = new SymfonyStyle($input, $output);
@@ -126,7 +121,7 @@ class AddUserCommand extends Command
         $pesel = $input->getArgument('pesel');
         $skills = $input->getArgument('skills');
 
-        $user = $this->userCreate->saveData($name, $surname, $email, $pesel, $skills);
+        $user = $this->userCreate->saveUser($name, $surname, $email, $pesel, $skills);
 
         $this->io->success(sprintf('%s was successfully created: %s (%s)',  'User', $user->getName(), $user->getEmail()));
 
