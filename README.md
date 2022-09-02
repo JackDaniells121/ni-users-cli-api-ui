@@ -19,11 +19,13 @@ There are 3 ways of creating new user:
 1. You should create new mysql user/password and new mysql database on localhost
 2. Find in .env file line with DATABASE_URL=
 3. Put this new credentials in this line see documentation (https://symfony.com/doc/current/doctrine.html#configuring-the-database)
-4. run commands:
-5.     php bin/console make:migration
-6.     php bin/console doctrine:migrations:migrate
-7. For Web app and REST request, run one more command to display site in browser:
-8.     symfony serve
+4. Install dependencies
+5.     composer install
+6. run commands:
+7.     php bin/console make:migration
+8.     php bin/console doctrine:migrations:migrate
+9. For Web app and REST request, run one more command to display site in browser:
+10.     symfony serve
 
 If everything woks ok site should be available at http://127.0.0.1:8000
 
