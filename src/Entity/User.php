@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use App\Controller\MailController;
 use App\Repository\UserRepository;
+use App\Utils\Pesel;
+use DateTimeImmutable;
+use DateTimeZone;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -37,9 +41,15 @@ class User
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: UserSkill::class, orphanRemoval: true)]
     private Collection $userSkills;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
     public function __construct()
     {
         $this->userSkills = new ArrayCollection();
+        $this->createdAt = new DateTimeImmutable('now', new DateTimeZone('Europe/Warsaw'));
+        $this->activated = 0;
+        $this->source = 'UI';
     }
 
     public function getId(): ?int
@@ -92,6 +102,12 @@ class User
     {
         $this->pesel = $pesel;
 
+        $this->age = Pesel::getAge($pesel);
+
+        if ($this->age > 18) {
+            $this->setActivated(1);
+        }
+
         return $this;
     }
 
@@ -108,6 +124,10 @@ class User
     public function setActivated(bool $activated): self
     {
         $this->activated = $activated;
+
+        if ($activated) {
+            MailController::sendUserActivationEmail($this);
+        }
 
         return $this;
     }
@@ -152,5 +172,39 @@ class User
         }
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        if ($this->pesel) {
+            return Pesel::getAge($this->pesel);
+        }
+        return 0;
+    }
+
+    public function getMissingAdolescenceText()
+    {
+        $missingInterval = Pesel::getAdolescentInterval($this->pesel);
+
+        if (Pesel::getAge($this->pesel) < 18) {
+
+            $years = $missingInterval->y > 0 ? $missingInterval->y . ' y' : '';
+            $months = $missingInterval->m > 0 ? $missingInterval->m . ' m' : '';
+            $days = $missingInterval->d > 0 ? $missingInterval->d . ' days' : '';
+            return '- ' . $years . ' ' . $months . ' ' . $days;
+        }
+        return '';
     }
 }

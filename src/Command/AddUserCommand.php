@@ -24,7 +24,7 @@ class AddUserCommand extends Command
 
     public function __construct(
         private Validator $validator,
-        private UserManager $userCreate
+        private UserManager $userManager
     ) {
         parent::__construct();
     }
@@ -121,7 +121,7 @@ class AddUserCommand extends Command
         $pesel = $input->getArgument('pesel');
         $skills = $input->getArgument('skills');
 
-        $user = $this->userCreate->saveUser($name, $surname, $email, $pesel, $skills);
+        $user = $this->userManager->saveData($name, $surname, $email, $pesel, $skills, 'CLI');
 
         $this->io->success(sprintf('%s was successfully created: %s (%s)',  'User', $user->getName(), $user->getEmail()));
 

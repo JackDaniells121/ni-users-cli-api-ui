@@ -22,7 +22,6 @@ class UserFormType extends AbstractType
             ->add('surname', TextType::class)
             ->add('email', EmailType::class)
             ->add('pesel', TextType::class)
-//            ->add('skills', TextType::class)
             ->add('submit', SubmitType::class)
         ;
     }

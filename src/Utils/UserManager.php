@@ -22,22 +22,15 @@ class UserManager
     {
     }
 
-    public function saveUser($name, $surname, $email, $pesel, $skills)
+    public function saveData($name, $surname, $email, $pesel, $skills, $source)
     {
-        $this->validateUserData($name, $surname, $email, $pesel, $skills);
-
         $user = new User();
-        $user->setSource("CLI");
+        $user->setSource($source);
         $user->setName($name);
         $user->setSurname($surname);
         $user->setEmail($email);
         $user->setPesel($pesel);
         $user->setActivated(false);
-
-        if (Pesel::getAge($pesel) >= 18) {
-            $user->setActivated(true);
-        }
-
 
         foreach (explode(',', $skills) as $skill) {
             $existingSkill = $this->skills->findOneByName(trim($skill));
@@ -57,12 +50,11 @@ class UserManager
             $user->addUserSkill($userSkill);
         }
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->saveUser($user);
         return $user;
     }
 
-    private function validateUserData($name, $surname, $email, $pesel, $skills): void
+    public function validateData($name, $surname, $email, $pesel, $skills): void
     {
         $this->validator->validatePesel($pesel);
         $this->validator->validateName($name);
@@ -73,6 +65,24 @@ class UserManager
     public function activateUser(User $user)
     {
         $user->setActivated(true);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    public function saveUser(User $user)
+    {
+        $this->validateData(
+            $user->getName(),
+            $user->getSurname(),
+            $user->getEmail(),
+            $user->getPesel(),
+            $user->getUserSkills()
+        );
+
+        if (Pesel::getAge($user->getPesel()) >= 18) {
+            $user->setActivated(true);
+        }
+
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
